@@ -189,7 +189,7 @@ if st.session_state['FormSubmitter:my_form-Caculate'] or st.session_state.submit
       df = RR(df,int(quantum))
 
 
-    st.table(df)
+#     st.table(df)
 
 
     st.markdown(GraphTimeline(df), unsafe_allow_html=True)
