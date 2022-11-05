@@ -84,7 +84,7 @@ def SRTF():
 def RR(df,quantum_time):
     queue = [0]
     execute_time = df.at[0,'Arrival Time']
-    pre_execute_time = 0
+    pre_execute_time = df.at[0,'Arrival Time']
     index = 0
     len_dataframe = df.shape[0]
     added_process_list = [0]
