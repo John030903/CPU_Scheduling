@@ -31,6 +31,7 @@ def CreateDataFrame(name,arrival,burst):
                      'End':10000})
     df['Arrival Time'] = [formatNumber(float(i)) for i in df['Arrival Time']]
     df['Burst Time'] = [formatNumber(float(i)) for i in df['Burst Time']]
+    df['Remain Time'] = df['Burst Time']
     sorted_df = df.sort_values(by='Arrival Time', ignore_index=True)
     return sorted_df
 
@@ -75,10 +76,86 @@ def SJF(df):
             row_min_BT['End'] = row_min_BT['Start'] + row_min_BT['Burst Time']
         df.loc[pos_min_BurstTime] = row_min_BT
         df = df.sort_values(by="Start", ignore_index=True)
-    return df
+    return df.loc[:,['Color Code','Process Name','Arrival Time','Burst Time','Start','End']]
 
-def SRTF():
-    pass
+@st.cache(allow_output_mutation=True)
+def SRTF(df):
+    execute_time = df.at[0,'Arrival Time']
+    executed_time = 0
+    pre_execute_time = df.at[0,'Arrival Time']
+    index_min = 0
+    len_dataframe = df.shape[0]
+    indexes_ready = [0]
+    process_ready = pd.DataFrame()
+    finished_processes = []
+    finish_adding = False
+    pre_index_min = 0
+    compared_index = 1
+    again = False
+    watting_new_process = False
+    while(True):
+        if(watting_new_process):
+            execute_time += df.at[index_min,'Remain Time']
+        else:
+            if (not again):
+                if(df.at[compared_index,'Arrival Time'] < df.at[index_min,'Burst Time'] + execute_time):
+                    execute_time = df.at[compared_index,'Arrival Time']
+                    watting_new_process = False
+                else:
+                        execute_time += df.at[index_min,'Burst Time']
+                        watting_new_process = True
+            else:
+                if(df.at[compared_index,'Arrival Time'] < df.at[index_min,'Remain Time'] + execute_time):
+                    execute_time = df.at[compared_index,'Arrival Time']
+                    watting_new_process = False
+                else:
+                    execute_time += df.at[index_min,'Remain Time']
+                    watting_new_process = True
+
+        
+        pos = 1
+        while(pos != len_dataframe and df.at[pos,'Arrival Time'] <= execute_time and not finish_adding):
+            if len(indexes_ready) == len_dataframe:
+                finish_adding = True
+                break
+            if(len(indexes_ready)-1 < pos):
+                indexes_ready.append(pos)
+            pos += 1        
+        start = pre_execute_time
+        executed_time = execute_time - start         
+        if(not again):
+            df.at[index_min,'Start'] = start
+            df.at[index_min,'End'] = start + executed_time
+        else:
+            df.at[index_min,'End'] += executed_time
+        if(executed_time <= df.at[index_min,'Burst Time']):
+            if not again:
+                remaining_time = df.at[index_min,'Burst Time'] - executed_time
+            else:
+                remaining_time = df.at[index_min,'Remain Time'] - executed_time
+            df.at[index_min,'Remain Time'] = remaining_time
+            if (remaining_time == 0):
+                finished_processes.append(index_min)
+        if (len(finished_processes) != len_dataframe):            
+            process_ready = df.iloc[[i for i in indexes_ready if i not in finished_processes],:]            
+            pre_index_min = index_min            
+            index_min = process_ready['Remain Time'].idxmin()
+            if index_min == pre_index_min:
+                compared_index += 1
+                again = True
+            else:
+                again = False
+                compared_index = index_min + 1
+                if(remaining_time != 0):
+                    df = df.append(df.loc[pre_index_min], ignore_index = True)
+                    indexes_ready[pre_index_min] = df.shape[0]-1
+                    df.at[df.shape[0]-1,'Burst Time'] = remaining_time
+            
+            pre_execute_time = execute_time
+        else:
+            break            
+    sorted_df = df.loc[:,['Color Code','Process Name','Arrival Time','Burst Time','Start','End']].sort_values(by='Start', ignore_index=True)
+    return sorted_df
 
 @st.cache(allow_output_mutation=True)
 def RR(df,quantum_time):
