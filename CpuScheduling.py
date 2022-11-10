@@ -249,7 +249,7 @@ with form.container():
     if(st.session_state["SA"] == "Round Robin"):
         _,  quantum_time, _ = st.columns((3,1,3))
         with quantum_time:
-            quantum = st.text_input('Quantum Time',placeholder='2')
+            quantum = st.text_input('Quantum Time',placeholder='2',key='QuantumTime')
     if 'submitted' not in st.session_state:
       st.session_state.submitted = False
 if st.session_state['FormSubmitter:my_form-Caculate'] or st.session_state.submitted:
@@ -263,10 +263,11 @@ if st.session_state['FormSubmitter:my_form-Caculate'] or st.session_state.submit
     elif st.session_state["SA"] == "Shorted Remaining Time First":
       df = SRTF(df)
     elif st.session_state["SA"] == "Round Robin":
-      df = RR(df,int(quantum))
+      if st.session_state.QuantumTime != '':
+        df = RR(df,int(st.session_state.QuantumTime))
 
-
-#     st.table(df)
-
-
-    st.markdown(GraphTimeline(df), unsafe_allow_html=True)
+    if st.session_state["SA"] != "Round Robin":
+        st.markdown(GraphTimeline(df), unsafe_allow_html=True)
+    else:
+        if st.session_state.QuantumTime != '':
+            st.markdown(GraphTimeline(df), unsafe_allow_html=True)
