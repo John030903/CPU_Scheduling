@@ -93,7 +93,7 @@ def SRTF(df):
     compared_index = 1
     again = False
     watting_new_process = False
-    while(True):
+    while(True):        
         if(watting_new_process):
             execute_time += df.at[index_min,'Remain Time']
         else:
@@ -102,21 +102,24 @@ def SRTF(df):
                     execute_time = df.at[compared_index,'Arrival Time']
                     watting_new_process = False
                 else:
-                        execute_time += df.at[index_min,'Burst Time']
+                        execute_time += df.at[index_min,'Burst Time']                        
                         watting_new_process = True
-            else:
-                if(df.at[compared_index,'Arrival Time'] < df.at[index_min,'Remain Time'] + execute_time):
-                    execute_time = df.at[compared_index,'Arrival Time']
-                    watting_new_process = False
+            else:                
+                if (not finish_adding):
+                    if(df.at[compared_index,'Arrival Time'] < df.at[index_min,'Remain Time'] + execute_time):
+                        execute_time = df.at[compared_index,'Arrival Time']
+                        watting_new_process = False
                 else:
-                    execute_time += df.at[index_min,'Remain Time']
+                    execute_time += df.at[index_min,'Remain Time']                    
                     watting_new_process = True
 
-        
+                
         pos = 1
-        while(pos != len_dataframe and df.at[pos,'Arrival Time'] <= execute_time and not finish_adding):
-            if len(indexes_ready) == len_dataframe:
+        while(not finish_adding):            
+            if len(indexes_ready) == len_dataframe or pos == len_dataframe:                
                 finish_adding = True
+                break
+            if df.at[pos,'Arrival Time'] > execute_time:
                 break
             if(len(indexes_ready)-1 < pos):
                 indexes_ready.append(pos)
