@@ -257,8 +257,8 @@ with form.container():
 if st.session_state['FormSubmitter:my_form-Caculate'] or st.session_state.submitted:
     st.session_state.submitted = True
     df = CreateDataFrame(name,arrival,burst)
-    show_list = df.loc[:,['Process Name','Arrival Time','Burst Time','Start','End']].astype(str)
     st.subheader("List Process")
+    show_list = df.loc[:,['Process Name','Arrival Time','Burst Time']].astype(str)
     st.table(show_list)
     if st.session_state["SA"] == "Shorted Job First":
       df = SJF(df)
@@ -270,6 +270,12 @@ if st.session_state['FormSubmitter:my_form-Caculate'] or st.session_state.submit
 
     if st.session_state["SA"] != "Round Robin":
         st.markdown(GraphTimeline(df), unsafe_allow_html=True)
+        st.subheader('')
+        show_list = df.loc[:,['Process Name','Arrival Time','Start','End']].astype(str)
+        st.table(show_list)
     else:
         if st.session_state.QuantumTime != '':
             st.markdown(GraphTimeline(df), unsafe_allow_html=True)
+            st.subheader('')
+            show_list = df.loc[:,['Process Name','Arrival Time','Start','End']].astype(str)
+            st.table(show_list)
