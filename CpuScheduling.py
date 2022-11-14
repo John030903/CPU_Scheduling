@@ -14,7 +14,6 @@ def formatNumber(num):
     else:
         return num
 
-@st.cache(allow_output_mutation=True)
 def CreateDataFrame(name,arrival,burst):
     color_board = ['#AEA2C5','#BBDF32','#00504B','#F83FA0','#5d5c61','#7395ae','#557a95','#64495c','#3500d4','#950741','#c3083f','#e7717d','#c2c9cf','#afd275','#66fcf1','#c5c6c8','#46a29f','#f13c10','#106466','#ff652f','#ffe401','#13a76c','#8265a7','#65ccb8','#a4a61e']
     name = name.split()
@@ -259,12 +258,12 @@ if st.session_state['FormSubmitter:my_form-Caculate'] or st.session_state.submit
     st.table(show_list)
     
     if st.session_state["SA"] == "Shorted Job First":
-      df = SJF(df)
+      df = SJF(df.copy())
     elif st.session_state["SA"] == "Shorted Remaining Time First":
-      df = SRTF(df)
+      df = SRTF(df.copy())
     elif st.session_state["SA"] == "Round Robin":
       if st.session_state.QuantumTime != '':
-        df = RR(df,int(st.session_state.QuantumTime))
+        df = RR(df.copy(),int(st.session_state.QuantumTime))
 
     if st.session_state["SA"] != "Round Robin":
         st.markdown(GraphTimeline(df), unsafe_allow_html=True)
