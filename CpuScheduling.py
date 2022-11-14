@@ -260,22 +260,23 @@ if st.session_state['FormSubmitter:my_form-Caculate'] or st.session_state.submit
     st.subheader("List Process")
     show_list = df.loc[:,['Process Name','Arrival Time','Burst Time']].astype(str)
     st.table(show_list)
+
     if st.session_state["SA"] == "Shorted Job First":
-      df = SJF(df.copy())
+      df_result = SJF(df.copy())
     elif st.session_state["SA"] == "Shorted Remaining Time First":
-      df = SRTF(df.copy())
+      df_result = SRTF(df.copy())
     elif st.session_state["SA"] == "Round Robin":
       if st.session_state.QuantumTime != '':
-        df = RR(df.copy(),int(st.session_state.QuantumTime))
+        df_result = RR(df.copy(),int(st.session_state.QuantumTime))
 
     if st.session_state["SA"] != "Round Robin":
-        st.markdown(GraphTimeline(df), unsafe_allow_html=True)
+        st.markdown(GraphTimeline(df_result), unsafe_allow_html=True)
         st.subheader('')
-        show_list = df.loc[:,['Process Name','Arrival Time','Start','End']].astype(str)
+        show_list = df_result.loc[:,['Process Name','Arrival Time','Start','End']].astype(str)
         st.table(show_list)
     else:
         if st.session_state.QuantumTime != '':
-            st.markdown(GraphTimeline(df), unsafe_allow_html=True)
+            st.markdown(GraphTimeline(df_result), unsafe_allow_html=True)
             st.subheader('')
-            show_list = df.loc[:,['Process Name','Arrival Time','Start','End']].astype(str)
+            show_list = df_result.loc[:,['Process Name','Arrival Time','Start','End']].astype(str)
             st.table(show_list)
