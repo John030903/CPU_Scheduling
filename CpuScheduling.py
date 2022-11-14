@@ -261,12 +261,12 @@ if st.session_state['FormSubmitter:my_form-Caculate'] or st.session_state.submit
     show_list = df.loc[:,['Process Name','Arrival Time','Burst Time']].astype(str)
     st.table(show_list)
     if st.session_state["SA"] == "Shorted Job First":
-      df = SJF(df)
+      df = SJF(df.copy())
     elif st.session_state["SA"] == "Shorted Remaining Time First":
-      df = SRTF(df)
+      df = SRTF(df.copy())
     elif st.session_state["SA"] == "Round Robin":
       if st.session_state.QuantumTime != '':
-        df = RR(df,int(st.session_state.QuantumTime))
+        df = RR(df.copy(),int(st.session_state.QuantumTime))
 
     if st.session_state["SA"] != "Round Robin":
         st.markdown(GraphTimeline(df), unsafe_allow_html=True)
