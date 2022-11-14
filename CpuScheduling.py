@@ -199,7 +199,6 @@ def RR(df,quantum_time):
 def GraphTimeline(df):
     total = df.loc[df.shape[0]-1]['End'] - df.loc[0]['Start']
     df['Width'] = (df['End'] - df['Start'])/total * 100
-    # Widths = [i for i in df['Width']]
     gantt = '<svg id="hsbar" width="100%" height="40">'
     tail = '</svg>'
     timeline = '''  
@@ -258,7 +257,7 @@ with form.container():
 if st.session_state['FormSubmitter:my_form-Caculate'] or st.session_state.submitted:
     st.session_state.submitted = True
     df = CreateDataFrame(name,arrival,burst)
-    show_list = df.loc[:,['Process Name','Arrival Time','Burst Time']].astype(str)
+    show_list = df.loc[:,['Process Name','Arrival Time','Burst Time','Start','End']].astype(str)
     st.subheader("List Process")
     st.table(show_list)
     if st.session_state["SA"] == "Shorted Job First":
