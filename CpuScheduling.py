@@ -93,6 +93,7 @@ def SRTF(df):
     compared_index = 1
     again = False
     watting_new_process = False
+    pos = 1
     while(True):        
         if(watting_new_process):
             execute_time += df.at[index_min,'Remain Time']
@@ -106,23 +107,21 @@ def SRTF(df):
                         watting_new_process = True
             else:                
                 if (not finish_adding):
-                    if(df.at[compared_index,'Arrival Time'] < df.at[index_min,'Remain Time'] + execute_time):
+                    if(df.at[compared_index,'Arrival Time'] <= df.at[index_min,'Remain Time'] + execute_time):
                         execute_time = df.at[compared_index,'Arrival Time']
-                        watting_new_process = False
+                        watting_new_process = False                    
                 else:
                     execute_time += df.at[index_min,'Remain Time']                    
-                    watting_new_process = True
+                    watting_new_process = True                    
 
                 
-        pos = 1
         while(not finish_adding):            
             if len(indexes_ready) == len_dataframe or pos == len_dataframe:                
                 finish_adding = True
                 break
             if df.at[pos,'Arrival Time'] > execute_time:
                 break
-            if(len(indexes_ready)-1 < pos):
-                indexes_ready.append(pos)
+            indexes_ready.append(pos)
             pos += 1        
         start = pre_execute_time
         executed_time = execute_time - start         
@@ -157,6 +156,7 @@ def SRTF(df):
             pre_execute_time = execute_time
         else:
             break            
+
     sorted_df = df.loc[:,['Color Code','Process Name','Arrival Time','Burst Time','Start','End']].sort_values(by='Start', ignore_index=True)
     return sorted_df
 
