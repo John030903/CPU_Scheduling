@@ -35,7 +35,6 @@ def CreateDataFrame(name,arrival,burst):
     sorted_df = df.sort_values(by='Arrival Time', ignore_index=True)
     return sorted_df
 
-@st.cache(allow_output_mutation=True)
 def SJF(df):
     row0 = df.loc[0].copy()
     row0['Start'] = row0['Arrival Time']
@@ -78,7 +77,6 @@ def SJF(df):
         df = df.sort_values(by="Start", ignore_index=True)
     return df.loc[:,['Color Code','Process Name','Arrival Time','Burst Time','Start','End']]
 
-@st.cache(allow_output_mutation=True)
 def SRTF(df):
     execute_time = df.at[0,'Arrival Time']
     executed_time = 0
@@ -160,7 +158,6 @@ def SRTF(df):
     sorted_df = df.loc[:,['Color Code','Process Name','Arrival Time','Burst Time','Start','End']].sort_values(by='Start', ignore_index=True)
     return sorted_df
 
-@st.cache(allow_output_mutation=True)
 def RR(df,quantum_time):
     queue = [0]
     execute_time = df.at[0,'Arrival Time']
@@ -260,23 +257,23 @@ if st.session_state['FormSubmitter:my_form-Caculate'] or st.session_state.submit
     st.subheader("List Process")
     show_list = df.loc[:,['Process Name','Arrival Time','Burst Time']].astype(str)
     st.table(show_list)
-
+    
     if st.session_state["SA"] == "Shorted Job First":
-      df_result = SJF(df.copy())
+      df = SJF(df)
     elif st.session_state["SA"] == "Shorted Remaining Time First":
-      df_result = SRTF(df.copy())
+      df = SRTF(df)
     elif st.session_state["SA"] == "Round Robin":
       if st.session_state.QuantumTime != '':
-        df_result = RR(df.copy(),int(st.session_state.QuantumTime))
+        df = RR(df,int(st.session_state.QuantumTime))
 
     if st.session_state["SA"] != "Round Robin":
-        st.markdown(GraphTimeline(df_result), unsafe_allow_html=True)
+        st.markdown(GraphTimeline(df), unsafe_allow_html=True)
         st.subheader('')
-        show_list = df_result.loc[:,['Process Name','Arrival Time','Start','End']].astype(str)
+        show_list = df.loc[:,['Process Name','Arrival Time','Start','End']].astype(str)
         st.table(show_list)
     else:
         if st.session_state.QuantumTime != '':
-            st.markdown(GraphTimeline(df_result), unsafe_allow_html=True)
+            st.markdown(GraphTimeline(df), unsafe_allow_html=True)
             st.subheader('')
-            show_list = df_result.loc[:,['Process Name','Arrival Time','Start','End']].astype(str)
+            show_list = df.loc[:,['Process Name','Arrival Time','Start','End']].astype(str)
             st.table(show_list)
