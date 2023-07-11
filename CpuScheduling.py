@@ -146,7 +146,7 @@ def SRTF(df):
                 again = False
                 compared_index = index_min + 1
                 if(remaining_time != 0):
-                    df = df.append(df.loc[pre_index_min], ignore_index = True)
+                    df = pd.concat([df, df.loc[pre_index_min]], ignore_index=True)
                     indexes_ready[pre_index_min] = df.shape[0]-1
                     df.at[df.shape[0]-1,'Burst Time'] = remaining_time
             
@@ -182,7 +182,7 @@ def RR(df,quantum_time):
         if(executed_time < df.at[index,'Burst Time']):
             remaining_time = df.at[index,'Burst Time'] - executed_time
             df.at[index,'Remain Time'] = remaining_time
-            df = df.append(df.loc[index], ignore_index = True)
+            df = pd.concat([df, df.loc[index]], ignore_index=True)
             df.at[df.shape[0]-1,'Burst Time'] = remaining_time
             queue.append(df.shape[0]-1)
         queue.pop(0)
